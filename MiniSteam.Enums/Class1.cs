@@ -1,6 +1,6 @@
 ﻿namespace MiniSteam.Enums
 {
-    public class Class1
+    public enum Class1
     {
 
     }

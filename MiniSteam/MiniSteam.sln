@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
+VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniSteam.WebApi", "MiniSteam.WebApi.csproj", "{5DB78C39-E753-46C4-88C3-66D8E4E953A6}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniSteam.Services", "..\Mi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniSteam.Abstractions", "..\MiniSteam.Abstractions\MiniSteam.Abstractions.csproj", "{C5A6EC46-80C6-4253-96AD-40CAE610CD9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniSteam.Aplication", "..\MiniSteam.Aplication\MiniSteam.Aplication.csproj", "{2E110658-869C-41C8-922F-9B41043FC044}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniSteam.Application", "..\MiniSteam.Aplication\MiniSteam.Application.csproj", "{2E110658-869C-41C8-922F-9B41043FC044}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniSteam.DataAccess", "..\MiniSteam.DataAccess\MiniSteam.DataAccess.csproj", "{880E2ECC-5A35-41CD-833F-AC70F621B572}"
 EndProject
