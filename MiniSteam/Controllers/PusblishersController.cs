@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MiniSteam.Application;
+using MiniSteam.Application.Dtos.Publisher;
 using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
@@ -10,10 +12,12 @@ namespace MiniSteam.WebApi.Controllers
     {
         private readonly ILogger<PublisersController> _logger;
         private readonly IApplication<Publisher> _publisher;
-        public PublisersController(ILogger<PublisersController> logger, IApplication<Publisher> publisher)
+        private readonly IMapper _mapper;
+        public PublisersController(ILogger<PublisersController> logger, IApplication<Publisher> publisher, IMapper mapper)
         {
             _logger = logger;
             _publisher = publisher;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -40,27 +44,28 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Publisher publisher)
+        public async Task<IActionResult> Create(PublisherRequestDto publisherRequestDto)
         {
             if (!ModelState.IsValid)
             { return BadRequest(); }
+            var publisher = _mapper.Map<Publisher>(publisherRequestDto);
             _publisher.Save(publisher);
             return Ok(publisher.Id);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Edit(int? Id, Publisher publisher)
+        public async Task<IActionResult> Edit(int? Id, PublisherRequestDto publisherRequestDto)
         {
             if (!Id.HasValue)
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            Publisher publisherBack = _publisher.GetById(Id.Value);
-            if (publisherBack is null)
+            Publisher publisher = _publisher.GetById(Id.Value);
+            if (publisher is null)
             { return NotFound(); }
-            publisherBack.Name = publisher.Name;
-            _publisher.Save(publisherBack);
-            return Ok(publisherBack);
+            publisher = _mapper.Map<Publisher>(publisherRequestDto);
+            _publisher.Save(publisher);
+            return Ok();
         }
 
         [HttpDelete]
@@ -70,10 +75,10 @@ namespace MiniSteam.WebApi.Controllers
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            Publisher publisherBack = _publisher.GetById(Id.Value);
-            if (publisherBack is null)
+            var publisher = _publisher.GetById(Id.Value);
+            if (publisher is null)
             { return NotFound(); }
-            _publisher.Delete(publisherBack.Id);
+            _publisher.Delete(publisher.Id);
             return Ok();
         }
     }

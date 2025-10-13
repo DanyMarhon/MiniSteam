@@ -16,7 +16,6 @@ namespace MiniSteam.Entities
         public virtual Publisher Publisher { get; set; }
         public DateTime ReleaseDate { get; set; }
         public decimal Price { get; set; }
-        public string Platform { get; set; }
         public string CoverImageUrl { get; set; }
 
         public virtual ICollection<GenrePerGame> GenrePerGames { get; set; }
