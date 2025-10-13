@@ -1,22 +1,22 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MiniSteam.Application;
-using MiniSteam.Application.Dtos.Publisher;
+using MiniSteam.Application.Dtos.Platform;
 using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PublishersController : ControllerBase
+    public class PlatformsController : ControllerBase
     {
-        private readonly ILogger<PublishersController> _logger;
-        private readonly IApplication<Publisher> _publisher;
+        private readonly ILogger<PlatformsController> _logger;
+        private readonly IApplication<Platform> _platform;
         private readonly IMapper _mapper;
-        public PublishersController(ILogger<PublishersController> logger, IApplication<Publisher> publisher, IMapper mapper)
+        public PlatformsController(ILogger<PlatformsController> logger, IApplication<Platform> platform, IMapper mapper)
         {
             _logger = logger;
-            _publisher = publisher;
+            _platform = platform;
             _mapper = mapper;
         }
 
@@ -24,7 +24,7 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_publisher.GetAll());
+            return Ok(_platform.GetAll());
         }
 
         [HttpGet]
@@ -35,36 +35,36 @@ namespace MiniSteam.WebApi.Controllers
             {
                 return BadRequest();
             }
-            Publisher publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
+            Platform platform = _platform.GetById(Id.Value);
+            if (platform is null)
             {
                 return NotFound();
             }
-            return Ok(publisher);
+            return Ok(platform);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(PublisherRequestDto publisherRequestDto)
+        public async Task<IActionResult> Create(PlatformRequestDto platformRequestDto)
         {
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            var publisher = _mapper.Map<Publisher>(publisherRequestDto);
-            _publisher.Save(publisher);
-            return Ok(publisher.Id);
+            var platform = _mapper.Map<Platform>(platformRequestDto);
+            _platform.Save(platform);
+            return Ok(platform.Id);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Edit(int? Id, PublisherRequestDto publisherRequestDto)
+        public async Task<IActionResult> Edit(int? Id, PlatformRequestDto platformRequestDto)
         {
             if (!Id.HasValue)
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            Publisher publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
+            Platform platform = _platform.GetById(Id.Value);
+            if (platform is null)
             { return NotFound(); }
-            publisher = _mapper.Map<Publisher>(publisherRequestDto);
-            _publisher.Save(publisher);
+            platform = _mapper.Map<Platform>(platformRequestDto);
+            _platform.Save(platform);
             return Ok();
         }
 
@@ -75,10 +75,10 @@ namespace MiniSteam.WebApi.Controllers
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            var publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
+            var platform = _platform.GetById(Id.Value);
+            if (platform is null)
             { return NotFound(); }
-            _publisher.Delete(publisher.Id);
+            _platform.Delete(platform.Id);
             return Ok();
         }
     }

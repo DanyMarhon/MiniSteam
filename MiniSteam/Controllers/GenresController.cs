@@ -1,22 +1,22 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MiniSteam.Application;
-using MiniSteam.Application.Dtos.Publisher;
+using MiniSteam.Application.Dtos.Genre;
 using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PublishersController : ControllerBase
+    public class GenresController : ControllerBase
     {
-        private readonly ILogger<PublishersController> _logger;
-        private readonly IApplication<Publisher> _publisher;
+        private readonly ILogger<GenresController> _logger;
+        private readonly IApplication<Genre> _genre;
         private readonly IMapper _mapper;
-        public PublishersController(ILogger<PublishersController> logger, IApplication<Publisher> publisher, IMapper mapper)
+        public GenresController(ILogger<GenresController> logger, IApplication<Genre> genre, IMapper mapper)
         {
             _logger = logger;
-            _publisher = publisher;
+            _genre = genre;
             _mapper = mapper;
         }
 
@@ -24,7 +24,7 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_publisher.GetAll());
+            return Ok(_genre.GetAll());
         }
 
         [HttpGet]
@@ -35,36 +35,36 @@ namespace MiniSteam.WebApi.Controllers
             {
                 return BadRequest();
             }
-            Publisher publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
+            Genre genre = _genre.GetById(Id.Value);
+            if (genre is null)
             {
                 return NotFound();
             }
-            return Ok(publisher);
+            return Ok(genre);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(PublisherRequestDto publisherRequestDto)
+        public async Task<IActionResult> Create(GenreRequestDto genreRequestDto)
         {
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            var publisher = _mapper.Map<Publisher>(publisherRequestDto);
-            _publisher.Save(publisher);
-            return Ok(publisher.Id);
+            var genre = _mapper.Map<Genre>(genreRequestDto);
+            _genre.Save(genre);
+            return Ok(genre.Id);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Edit(int? Id, PublisherRequestDto publisherRequestDto)
+        public async Task<IActionResult> Edit(int? Id, GenreRequestDto genreRequestDto)
         {
             if (!Id.HasValue)
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            Publisher publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
+            Genre genre = _genre.GetById(Id.Value);
+            if (genre is null)
             { return NotFound(); }
-            publisher = _mapper.Map<Publisher>(publisherRequestDto);
-            _publisher.Save(publisher);
+            genre = _mapper.Map<Genre>(genreRequestDto);
+            _genre.Save(genre);
             return Ok();
         }
 
@@ -75,10 +75,10 @@ namespace MiniSteam.WebApi.Controllers
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            var publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
+            var genre = _genre.GetById(Id.Value);
+            if (genre is null)
             { return NotFound(); }
-            _publisher.Delete(publisher.Id);
+            _genre.Delete(genre.Id);
             return Ok();
         }
     }

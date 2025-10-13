@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniSteam.DataAccess;
 
@@ -11,9 +12,11 @@ using MiniSteam.DataAccess;
 namespace MiniSteam.WebApi.Migrations
 {
     [DbContext(typeof(DbDataAccess))]
-    partial class DbDataAccessModelSnapshot : ModelSnapshot
+    [Migration("20251013025400_migra2")]
+    partial class migra2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
