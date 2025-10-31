@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MiniSteam.Application;
+using MiniSteam.Application.Dtos.Game;
 using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
@@ -23,7 +24,7 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_game.GetAll());
+            return Ok(_mapper.Map<IList<GameResponseDto>>(_game.GetAll()));
         }
 
         [HttpGet]
@@ -39,7 +40,7 @@ namespace MiniSteam.WebApi.Controllers
             {
                 return NotFound();
             }
-            return Ok(game);
+            return Ok(_mapper.Map<GameResponseDto>(game));
         }
 
         //TODO: Implement Create, Edit, Delete

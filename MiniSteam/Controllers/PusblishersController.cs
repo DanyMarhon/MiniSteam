@@ -24,7 +24,7 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_publisher.GetAll());
+            return Ok(_mapper.Map<IList<PublisherResponseDto>>(_publisher.GetAll()));
         }
 
         [HttpGet]
@@ -40,7 +40,7 @@ namespace MiniSteam.WebApi.Controllers
             {
                 return NotFound();
             }
-            return Ok(publisher);
+            return Ok(_mapper.Map<PublisherResponseDto>(publisher));
         }
 
         [HttpPost]

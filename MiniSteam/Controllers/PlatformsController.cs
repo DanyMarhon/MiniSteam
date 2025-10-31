@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MiniSteam.Application;
 using MiniSteam.Application.Dtos.Platform;
 using MiniSteam.Entities;
+using System.Xml.Linq;
 
 namespace MiniSteam.WebApi.Controllers
 {
@@ -24,7 +25,7 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_platform.GetAll());
+            return Ok(_mapper.Map<IList<PlatformResponseDto>>(_platform.GetAll()));
         }
 
         [HttpGet]
@@ -40,7 +41,7 @@ namespace MiniSteam.WebApi.Controllers
             {
                 return NotFound();
             }
-            return Ok(platform);
+            return Ok(_mapper.Map<PlatformResponseDto>(platform));
         }
 
         [HttpPost]

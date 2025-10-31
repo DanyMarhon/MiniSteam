@@ -24,7 +24,7 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_genre.GetAll());
+            return Ok(_mapper.Map<IList<GenreResponseDto>>(_genre.GetAll()));
         }
 
         [HttpGet]
@@ -40,7 +40,7 @@ namespace MiniSteam.WebApi.Controllers
             {
                 return NotFound();
             }
-            return Ok(genre);
+            return Ok(_mapper.Map<GenreResponseDto>(genre));
         }
 
         [HttpPost]
@@ -65,7 +65,7 @@ namespace MiniSteam.WebApi.Controllers
             { return NotFound(); }
             genre = _mapper.Map<Genre>(genreRequestDto);
             _genre.Save(genre);
-            return Ok();
+            return Ok(_mapper.Map<GenreResponseDto>(genre));
         }
 
         [HttpDelete]
