@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using MiniSteam.Application;
 using MiniSteam.Application.Dtos.Genre;
+using MiniSteam.CustomExceptions;
 using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
@@ -44,13 +46,48 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPost]
+        //public async Task<IActionResult> Create(GenreRequestDto genreRequestDto)
+        //{
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        { return BadRequest(); }
+        //        var genre = _mapper.Map<Genre>(genreRequestDto);
+        //        _genre.Save(genre);
+        //        return Ok(genre.Id);
+        //    }
+        //    catch (AutoMapperMappingException ex)
+        //    {
+        //        throw new MiniSteamException("Mapping", ex);
+        //    }
+        //}
+
         public async Task<IActionResult> Create(GenreRequestDto genreRequestDto)
         {
             if (!ModelState.IsValid)
-            { return BadRequest(); }
-            var genre = _mapper.Map<Genre>(genreRequestDto);
-            _genre.Save(genre);
-            return Ok(genre.Id);
+                throw new MiniSteamException("Validation");
+
+            try
+            {
+                var genre = _mapper.Map<Genre>(genreRequestDto);
+
+                // Debería hacer el método asíncrono
+                _genre.Save(genre);
+
+                return Ok(genre.Id);
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpPut]
