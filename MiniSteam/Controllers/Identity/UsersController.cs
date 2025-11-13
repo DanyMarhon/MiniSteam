@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using MiniSteam.CustomExceptions;
 using MiniSteam.Entities.MicrosoftIdentity;
 
 namespace Biblioteca.WebApi.Controllers.Identity
@@ -27,17 +30,52 @@ namespace Biblioteca.WebApi.Controllers.Identity
         [Route("AddRoleToUser")]
         public async Task<IActionResult> Guardar(string userId, string roleId)
         {
-            var user = _userManager.FindByIdAsync(userId).Result;
-            var role = _roleManager.FindByIdAsync(roleId).Result;
-            if (user is not null && role is not null)
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(roleId))
             {
+                return BadRequest(new { error = "Both userId and roleId are required." });
+            }
+
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user is null)
+                {
+                    _logger.LogInformation("User not found. userId: {UserId}", userId);
+                    return NotFound(new { userId });
+                }
+
+                var role = await _roleManager.FindByIdAsync(roleId);
+                if (role is null)
+                {
+                    _logger.LogInformation("Role not found. roleId: {RoleId}", roleId);
+                    return NotFound(new { roleId });
+                }
+
                 var status = await _userManager.AddToRoleAsync(user, role.Name);
                 if (status.Succeeded)
                 {
-                    return Ok(new { user = user.UserName, rol = role.Name });
+                    return Ok(new { user = user.UserName, role = role.Name });
                 }
+
+                var errors = status.Errors?.Select(e => e.Description).ToArray() ?? Array.Empty<string>();
+                _logger.LogWarning("Failed to add role '{Role}' to user '{User}'. Errors: {Errors}", role.Name, user.UserName, string.Join("; ", errors));
+                return BadRequest(new { errors });
             }
-            return BadRequest(new { userId = userId, roleId = roleId });
+            catch (AutoMapperMappingException ex)
+            {
+                _logger.LogError(ex, "Mapping exception adding role '{RoleId}' to user '{UserId}'", roleId, userId);
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Database exception adding role '{RoleId}' to user '{UserId}'", roleId, userId);
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception adding role '{RoleId}' to user '{UserId}'", roleId, userId);
+                throw new MiniSteamException("Service", ex);
+            }
         }
     }
 }

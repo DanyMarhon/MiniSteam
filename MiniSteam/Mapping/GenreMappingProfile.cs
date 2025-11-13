@@ -8,8 +8,8 @@ namespace MiniSteam.WebApi.Mapping
     {
         public GenreMappingProfile()
         {
-            //CreateMap<Genre, GenreResponseDto>();
-            //CreateMap<GenreRequestDto, Genre>();
+            CreateMap<Genre, GenreResponseDto>();
+            CreateMap<GenreRequestDto, Genre>();
         }
     }
 }
