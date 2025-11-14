@@ -13,6 +13,7 @@ using MiniSteam.WebApi.Configurations;
 namespace MiniSteam.WebApi.Controllers.Identity
 {
     [Route("api/[controller]")]
+    [AllowAnonymous]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -58,10 +59,7 @@ namespace MiniSteam.WebApi.Controllers.Identity
                     var created = await _userManager.CreateAsync(newUser, user.Password);
                     if (created.Succeeded)
                     {
-                        var response = _mapper.Map<UserRegistroResponseDto>(newUser) ?? new UserRegistroResponseDto();
-                        response.FullName = string.IsNullOrWhiteSpace(response.FullName) ? string.Join(" ", user.Names, user.Surname) : response.FullName;
-                        response.Email = string.IsNullOrWhiteSpace(response.Email) ? newUser.Email : response.Email;
-                        response.UserName = string.IsNullOrWhiteSpace(response.UserName) ? newUser.UserName : response.UserName;
+                        var response = _mapper.Map<UserRegistroResponseDto>(user) ?? new UserRegistroResponseDto();
 
                         return Ok(response);
                     }
@@ -147,7 +145,6 @@ namespace MiniSteam.WebApi.Controllers.Identity
 
         [HttpPost]
         [Route("login")]
-        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserRequestDto userlogin)
         {
             try
@@ -163,11 +160,14 @@ namespace MiniSteam.WebApi.Controllers.Identity
                 if (!isCorrect)
                     return Unauthorized(new LoginUserResponseDto { Login = false, Errors = new System.Collections.Generic.List<string> { "User or Pass wrong!" } });
 
+                var roles = await _userManager.GetRolesAsync(userExists);
                 var parameters = new TokenParameters
                 {
                     Id = userExists.Id.ToString(),
+                    PaswordHash = userExists.PasswordHash,
                     UserName = userExists.UserName,
-                    Email = userExists.Email
+                    Email = userExists.Email,
+                    Roles = roles
                 };
 
                 var jwt = _tokenService.GenerateJwtTokens(parameters);

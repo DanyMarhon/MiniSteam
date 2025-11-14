@@ -7,11 +7,13 @@ using Microsoft.Data.SqlClient;
 using MiniSteam.CustomExceptions;
 using MiniSteam.Entities.MicrosoftIdentity;
 
-namespace Biblioteca.WebApi.Controllers.Identity
+namespace MiniSteam.WebApi.Controllers.Identity
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
+
     public class UsersController : ControllerBase
     {
         private readonly RoleManager<Role> _roleManager;
@@ -25,6 +27,7 @@ namespace Biblioteca.WebApi.Controllers.Identity
             _logger = logger;
             _userManager = userManage;
         }
+
 
         [HttpPost]
         [Route("AddRoleToUser")]

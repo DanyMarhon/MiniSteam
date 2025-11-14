@@ -11,6 +11,7 @@ using MiniSteam.Entities.MicrosoftIdentity;
 namespace MiniSteam.WebApi.Controllers.Identity
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class RolesController : ControllerBase
@@ -53,6 +54,7 @@ namespace MiniSteam.WebApi.Controllers.Identity
 
         [HttpPost]
         [Route("Create")]
+        [AllowAnonymous]
         public async Task<IActionResult> Guardar([FromBody] RoleRequestDto roleRequestDto)
         {
             if (!ModelState.IsValid)

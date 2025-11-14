@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using MiniSteam.Application;
@@ -23,6 +24,7 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("All")]
         public async Task<IActionResult> All()
         {
@@ -45,6 +47,7 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("ById")]
         public async Task<IActionResult> ById(int? Id)
         {
@@ -78,6 +81,7 @@ namespace MiniSteam.WebApi.Controllers
 
         [HttpPost]
         [Route("Create")]
+        [Authorize(Roles = "Admin, ExtendedUser")]
         public async Task<IActionResult> Create([FromBody] Game game)
         {
             if (game is null)
@@ -107,6 +111,7 @@ namespace MiniSteam.WebApi.Controllers
 
         [HttpPut]
         [Route("Edit")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit([FromBody] Game game)
         {
             if (game is null || game.Id == 0)
@@ -141,6 +146,7 @@ namespace MiniSteam.WebApi.Controllers
 
         [HttpDelete]
         [Route("Delete")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? Id)
         {
             if (!Id.HasValue)
