@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using MiniSteam.Application;
-using MiniSteam.Application.Dtos.Game;
+using MiniSteam.Application.Dtos.GamerUser;
 using MiniSteam.CustomExceptions;
 using MiniSteam.Entities;
 
@@ -11,31 +11,31 @@ namespace MiniSteam.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GamesController : ControllerBase
+    public class GamerUsersController : ControllerBase
     {
-        private readonly ILogger<GamesController> _logger;
-        private readonly IApplication<Game> _game;
+        private readonly ILogger<GamerUsersController> _logger;
+        private readonly IApplication<GamerUser> _gamerUsers;
         private readonly IMapper _mapper;
 
-        public GamesController(
-            ILogger<GamesController> logger,
-            IApplication<Game> game,
+        public GamerUsersController(
+            ILogger<GamerUsersController> logger,
+            IApplication<GamerUser> gamerUsers,
             IMapper mapper)
         {
             _logger = logger;
-            _game = game;
+            _gamerUsers = gamerUsers;
             _mapper = mapper;
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [Route("All")]
         public async Task<IActionResult> All()
         {
             try
             {
-                var list = _game.GetAll();
-                return Ok(_mapper.Map<IList<GameResponseDto>>(list));
+                var users = _gamerUsers.GetAll();
+                return Ok(_mapper.Map<IList<GamerUserResponseDto>>(users));
             }
             catch (AutoMapperMappingException ex)
             {
@@ -52,20 +52,21 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [Route("ById")]
         public async Task<IActionResult> ById(int? Id)
         {
-            if (!Id.HasValue)
-                return BadRequest();
-
             try
             {
-                var game = _game.GetById(Id.Value);
-                if (game is null)
+                if (!Id.HasValue)
+                    return BadRequest();
+
+                GamerUser user = _gamerUsers.GetById(Id.Value);
+
+                if (user is null)
                     return NotFound();
 
-                return Ok(_mapper.Map<GameResponseDto>(game));
+                return Ok(_mapper.Map<GamerUserResponseDto>(user));
             }
             catch (AutoMapperMappingException ex)
             {
@@ -82,18 +83,19 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, ExtendedUser")]
-        public async Task<IActionResult> Create(GameRequestDto dto)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(GamerUserRequestDto dto)
         {
-            if (!ModelState.IsValid)
-                throw new MiniSteamException("Validation");
-
             try
             {
-                Game game = _mapper.Map<Game>(dto);
-                _game.Save(game);
+                if (!ModelState.IsValid)
+                    return BadRequest();
 
-                return Ok(game.Id);
+                var user = _mapper.Map<GamerUser>(dto);
+
+                _gamerUsers.Save(user);
+
+                return Ok(user.Id);
             }
             catch (AutoMapperMappingException ex)
             {
@@ -110,48 +112,27 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPut]
-        [Route("Edit")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit([FromBody] GameRequestDto dto)
+        public async Task<IActionResult> Edit(int? Id, GamerUserRequestDto dto)
         {
-            if (dto is null || dto.Id == 0)
-                return BadRequest("El DTO es inválido.");
-
             try
             {
-                var existing = _game.GetById(dto.Id);
-                if (existing is null)
-                    return NotFound("El juego no existe.");
+                if (!Id.HasValue)
+                    return BadRequest();
 
-                _mapper.Map(dto, existing);
+                if (!ModelState.IsValid)
+                    return BadRequest();
 
-                var saved = _game.Save(existing);
+                GamerUser user = _gamerUsers.GetById(Id.Value);
 
-                var response = _mapper.Map<GameResponseDto>(saved);
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                throw new MiniSteamException("GameService.Edit", ex);
-            }
-        }
-
-
-        [HttpDelete]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int? Id)
-        {
-            if (!Id.HasValue)
-                return BadRequest();
-
-            try
-            {
-                var game = _game.GetById(Id.Value);
-                if (game is null)
+                if (user is null)
                     return NotFound();
 
-                _game.Delete(game.Id);
+                dto.Id = Id.Value;
+                _mapper.Map(dto, user);
+
+                _gamerUsers.Save(user);
+
                 return Ok();
             }
             catch (AutoMapperMappingException ex)
@@ -167,5 +148,6 @@ namespace MiniSteam.WebApi.Controllers
                 throw new MiniSteamException("Service", ex);
             }
         }
+
     }
 }

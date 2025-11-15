@@ -1,7 +1,8 @@
-﻿using MiniSteam.Abstractions;
+﻿using Microsoft.EntityFrameworkCore;
+using MiniSteam.Abstractions;
+using MiniSteam.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace MiniSteam.Entities
 {
@@ -18,7 +19,13 @@ namespace MiniSteam.Entities
             Publisher = null;
         }
 
-        public Game(string title, int idPublisher, DateTime releaseDate, decimal price, string coverImageUrl)
+        public Game(
+            string title,
+            int idPublisher,
+            DateTime releaseDate,
+            decimal price,
+            string coverImageUrl,
+            GameClassification classification)
             : this()
         {
             SetTitle(title);
@@ -26,11 +33,12 @@ namespace MiniSteam.Entities
             SetReleaseDate(releaseDate);
             SetPrice(price);
             SetCoverImageUrl(coverImageUrl);
+            SetClassification(classification);
         }
         #endregion
 
         #region Properties
-        public int Id { get; set; }
+        public int Id { get; private set; }
 
         [StringLength(150)]
         public string Title { get; private set; }
@@ -53,18 +61,32 @@ namespace MiniSteam.Entities
         [StringLength(500)]
         public string CoverImageUrl { get; private set; }
 
+        /// <summary>
+        /// PEGI Classification (3, 7, 12, 16, 18)
+        /// </summary>
+        public GameClassification Classification { get; private set; }
+
         public virtual ICollection<GenrePerGame> GenrePerGames { get; private set; }
         public virtual ICollection<PlatformPerGame> PlatformPerGames { get; private set; }
         #endregion
 
-        #region Setters y Getters controlados
+        #region Controlled Setters & Getters
+
+        public void SetId(int id)
+        {
+            if (id <= 0)
+                throw new ArgumentException("Id must be greater than 0.");
+
+            Id = id;
+        }
+
         public void SetTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("El título del juego no puede estar vacío.");
+                throw new ArgumentException("Game title cannot be empty.");
 
             if (title.Length > 150)
-                throw new ArgumentException("El título no puede tener más de 150 caracteres.");
+                throw new ArgumentException("Game title cannot exceed 150 characters.");
 
             Title = title.Trim();
         }
@@ -72,7 +94,7 @@ namespace MiniSteam.Entities
         public void SetDescription(string? description)
         {
             if (description != null && description.Length > 1000)
-                throw new ArgumentException("La descripción no puede tener más de 1000 caracteres.");
+                throw new ArgumentException("Description cannot exceed 1000 characters.");
 
             Description = description?.Trim();
         }
@@ -80,14 +102,15 @@ namespace MiniSteam.Entities
         public void SetIdPublisher(int idPublisher)
         {
             if (idPublisher <= 0)
-                throw new ArgumentException("El Id del publicador debe ser mayor que 0.");
+                throw new ArgumentException("Publisher Id must be greater than 0.");
+
             IdPublisher = idPublisher;
         }
 
         public void SetPublisher(Publisher publisher)
         {
             if (publisher is null)
-                throw new ArgumentNullException(nameof(publisher), "El publicador no puede ser nulo.");
+                throw new ArgumentNullException(nameof(publisher), "Publisher cannot be null.");
 
             Publisher = publisher;
             IdPublisher = publisher.Id;
@@ -96,7 +119,7 @@ namespace MiniSteam.Entities
         public void SetReleaseDate(DateTime releaseDate)
         {
             if (releaseDate > DateTime.Now.AddYears(5))
-                throw new ArgumentException("La fecha de lanzamiento no puede ser más de 5 años en el futuro.");
+                throw new ArgumentException("Release date cannot be more than 5 years in the future.");
 
             ReleaseDate = releaseDate;
         }
@@ -104,23 +127,31 @@ namespace MiniSteam.Entities
         public void SetPrice(decimal price)
         {
             if (price < 0)
-                throw new ArgumentException("El precio no puede ser negativo.");
+                throw new ArgumentException("Price cannot be negative.");
 
-            // Normalizar a 2 decimales para evitar problemas de precisión al persistir en la BD
             Price = decimal.Round(price, 2, MidpointRounding.AwayFromZero);
         }
 
         public void SetCoverImageUrl(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("La URL de la imagen de portada no puede estar vacía.");
+                throw new ArgumentException("Cover image URL cannot be empty.");
 
             if (url.Length > 500)
-                throw new ArgumentException("La URL de la imagen no puede tener más de 500 caracteres.");
+                throw new ArgumentException("Cover image URL cannot exceed 500 characters.");
 
             CoverImageUrl = url.Trim();
         }
 
+        public void SetClassification(GameClassification classification)
+        {
+            if (!Enum.IsDefined(typeof(GameClassification), classification))
+                throw new ArgumentException("Invalid game classification.");
+
+            Classification = classification;
+        }
+
+        public GameClassification GetClassification() => Classification;
         public string GetTitle() => Title;
         public string? GetDescription() => Description;
         public decimal GetPrice() => Price;
@@ -128,4 +159,3 @@ namespace MiniSteam.Entities
         #endregion
     }
 }
-

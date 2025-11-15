@@ -1,4 +1,6 @@
-﻿namespace MiniSteam.Application.Dtos.Game
+﻿using MiniSteam.Enums;
+
+namespace MiniSteam.Application.Dtos.Game
 {
     public class GameRequestDto
     {
@@ -8,7 +10,7 @@
         public int IdPublisher { get; set; }
         public DateTime ReleaseDate { get; set; }
         public decimal Price { get; set; }
-        public string Platform { get; set; }
+        public GameClassification Classification { get; set; }
         public string CoverImageUrl { get; set; }
     }
 }

@@ -34,6 +34,7 @@
     <ProjectReference Include="..\MiniSteam.Aplication\MiniSteam.Application.csproj" />
     <ProjectReference Include="..\MiniSteam.DataAccess\MiniSteam.DataAccess.csproj" />
     <ProjectReference Include="..\MiniSteam.Entities\MiniSteam.Entities.csproj" />
+    <ProjectReference Include="..\MiniSteam.Enums\MiniSteam.Enums.csproj" />
     <ProjectReference Include="..\MiniSteam.Services\MiniSteam.Services.csproj" />
   </ItemGroup>
 
