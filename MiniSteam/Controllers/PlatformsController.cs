@@ -25,7 +25,6 @@ namespace MiniSteam.WebApi.Controllers
 
 
         [HttpGet]
-        [AllowAnonymous]
         [Route("All")]
         public async Task<IActionResult> All()
         {
@@ -48,7 +47,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         [Route("ById")]
         public async Task<IActionResult> ById(int? Id)
         {
@@ -80,7 +78,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(PlatformRequestDto platformRequestDto)
         {
             try
@@ -106,7 +103,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? Id, PlatformRequestDto platformRequestDto)
         {
             try
@@ -137,7 +133,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detele(int? Id)
         {
             try

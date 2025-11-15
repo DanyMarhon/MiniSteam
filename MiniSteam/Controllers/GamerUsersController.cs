@@ -28,7 +28,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         [Route("All")]
         public async Task<IActionResult> All()
         {
@@ -52,7 +51,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         [Route("ById")]
         public async Task<IActionResult> ById(int? Id)
         {
@@ -83,7 +81,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(GamerUserRequestDto dto)
         {
             try
@@ -112,7 +109,6 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? Id, GamerUserRequestDto dto)
         {
             try

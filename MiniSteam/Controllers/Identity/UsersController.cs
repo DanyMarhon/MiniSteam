@@ -10,7 +10,6 @@ using MiniSteam.Entities.MicrosoftIdentity;
 namespace MiniSteam.WebApi.Controllers.Identity
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
 
