@@ -12,8 +12,8 @@ using MiniSteam.WebApi.Configurations;
 
 namespace MiniSteam.WebApi.Controllers.Identity
 {
-    [Route("api/[controller]")]
     [AllowAnonymous]
+    [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {

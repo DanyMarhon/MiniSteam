@@ -29,6 +29,7 @@ namespace MiniSteam.WebApi.Controllers.Identity
 
         [HttpGet]
         [Route("GetAll")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -87,6 +88,7 @@ namespace MiniSteam.WebApi.Controllers.Identity
 
         [HttpPut]
         [Route("Update")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Modificar([FromBody] RoleRequestDto roleRequestDto, [FromQuery] Guid id)
         {
             if (!ModelState.IsValid)
@@ -126,8 +128,9 @@ namespace MiniSteam.WebApi.Controllers.Identity
             }
         }
 
-        [Route("GetById")]
         [HttpGet]
+        [Route("GetById")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(Guid? id)
         {
             if (!id.HasValue)

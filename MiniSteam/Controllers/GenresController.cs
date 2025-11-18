@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -9,6 +10,7 @@ using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class GenresController : ControllerBase
@@ -78,6 +80,7 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(GenreRequestDto genreRequestDto)
         {
             if (!ModelState.IsValid)
@@ -107,6 +110,7 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? Id, GenreRequestDto genreRequestDto)
         {
             if (!Id.HasValue)
@@ -139,6 +143,7 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detele(int? Id)
         {
             if (!Id.HasValue)

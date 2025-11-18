@@ -13,6 +13,8 @@ namespace MiniSteam.DataAccess
         public virtual DbSet<Platform> Platforms { get; set; }
         public virtual DbSet<GenrePerGame> GenrePerGames { get; set; }
         public virtual DbSet<PlatformPerGame> PlatformPerGames { get; set; }
+        public virtual DbSet<GamerUser> GamerUsers { get; set; }
+        public virtual DbSet<Licence> Licences { get; set; }
 
         public DbDataAccess(DbContextOptions<DbDataAccess> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.LogTo(Console.WriteLine).EnableDetailedErrors();

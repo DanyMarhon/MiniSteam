@@ -72,12 +72,10 @@ namespace MiniSteam.Entities
             IdGame = game.Id;
         }
 
-        public void SetLicenceKey(Guid key)
+        public Guid GenerateKey()
         {
-            if (key == Guid.Empty)
-                throw new ArgumentException("Licence key cannot be empty.");
-
-            LicenceKey = key;
+            LicenceKey = Guid.NewGuid();
+            return LicenceKey;
         }
         #endregion
     }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -9,6 +10,7 @@ using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class PlatformsController : ControllerBase
@@ -78,6 +80,7 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(PlatformRequestDto platformRequestDto)
         {
             try
@@ -103,6 +106,7 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? Id, PlatformRequestDto platformRequestDto)
         {
             try
@@ -133,7 +137,8 @@ namespace MiniSteam.WebApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Detele(int? Id)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? Id)
         {
             try
             {

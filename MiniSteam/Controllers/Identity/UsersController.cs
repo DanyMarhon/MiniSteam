@@ -30,6 +30,7 @@ namespace MiniSteam.WebApi.Controllers.Identity
 
         [HttpPost]
         [Route("AddRoleToUser")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Guardar(string userId, string roleId)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(roleId))
