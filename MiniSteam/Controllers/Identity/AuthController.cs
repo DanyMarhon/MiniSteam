@@ -88,62 +88,6 @@ namespace MiniSteam.WebApi.Controllers.Identity
         }
 
         [HttpPost]
-        [Route("RegisterSincronico")]
-        public IActionResult RegistrarUsuarioincronico([FromBody] UserRegistroRequestDto user)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var existeUsuario = _userManager.FindByEmailAsync(user.Email).Result;
-                    if (existeUsuario != null)
-                    {
-                        return BadRequest("Mail " + user.Email + " already in use.");
-                    }
-                    var Creado = _userManager.CreateAsync(new User()
-                    {
-                        Email = user.Email,
-                        UserName = user.Email.Substring(0, user.Email.IndexOf('@')),
-                        Names = user.Names,
-                        Surname = user.Surname,
-                        BirthDate = user.BirthDate
-                    }, user.Password).Result;
-                    if (Creado.Succeeded)
-                    {
-                        var userBack = _userManager.FindByEmailAsync(user.Email);
-                        _ = _userManager.AddToRoleAsync(userBack.Result, "Administrator");
-                        return Ok(new UserRegistroResponseDto
-                        {
-                            FullName = string.Join(" ", user.Names, user.Surname),
-                            Email = user.Email,
-                            UserName = user.Email.Substring(0, user.Email.IndexOf('@'))
-                        });
-                    }
-                    else
-                    {
-                        return BadRequest(Creado.Errors.Select(e => e.Description).ToList());
-                    }
-                }
-                else
-                {
-                    return BadRequest("Invalid data.");
-                }
-            }
-            catch (AutoMapperMappingException ex)
-            {
-                throw new MiniSteamException("Mapping", ex);
-            }
-            catch (SqlException ex)
-            {
-                throw new MiniSteamException("Database", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new MiniSteamException("Service", ex);
-            }
-        }
-
-        [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequestDto userlogin)
         {
