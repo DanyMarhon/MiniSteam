@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using MiniSteam.Application;
 using MiniSteam.Application.Dtos.Genre;
+using MiniSteam.CustomExceptions;
 using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class GenresController : ControllerBase
@@ -24,7 +29,22 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_mapper.Map<IList<GenreResponseDto>>(_genre.GetAll()));
+            try
+            {
+                return Ok(_mapper.Map<IList<GenreResponseDto>>(_genre.GetAll()));
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpGet]
@@ -35,51 +55,122 @@ namespace MiniSteam.WebApi.Controllers
             {
                 return BadRequest();
             }
-            Genre genre = _genre.GetById(Id.Value);
-            if (genre is null)
+
+            try
             {
-                return NotFound();
+                Genre genre = _genre.GetById(Id.Value);
+                if (genre is null)
+                {
+                    return NotFound();
+                }
+                return Ok(_mapper.Map<GenreResponseDto>(genre));
             }
-            return Ok(_mapper.Map<GenreResponseDto>(genre));
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(GenreRequestDto genreRequestDto)
         {
             if (!ModelState.IsValid)
-            { return BadRequest(); }
-            var genre = _mapper.Map<Genre>(genreRequestDto);
-            _genre.Save(genre);
-            return Ok(genre.Id);
+                throw new MiniSteamException("Validation");
+
+            try
+            {
+                var genre = _mapper.Map<Genre>(genreRequestDto);
+
+                // Debería hacer el método asíncrono
+                _genre.Save(genre);
+
+                return Ok(genre.Id);
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? Id, GenreRequestDto genreRequestDto)
         {
             if (!Id.HasValue)
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            Genre genre = _genre.GetById(Id.Value);
-            if (genre is null)
-            { return NotFound(); }
-            genre = _mapper.Map<Genre>(genreRequestDto);
-            _genre.Save(genre);
-            return Ok(_mapper.Map<GenreResponseDto>(genre));
+
+            try
+            {
+                Genre genre = _genre.GetById(Id.Value);
+                if (genre is null)
+                { return NotFound(); }
+
+                genre = _mapper.Map<Genre>(genreRequestDto);
+                _genre.Save(genre);
+                return Ok(_mapper.Map<GenreResponseDto>(genre));
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detele(int? Id)
         {
             if (!Id.HasValue)
             { return BadRequest(); }
             if (!ModelState.IsValid)
             { return BadRequest(); }
-            var genre = _genre.GetById(Id.Value);
-            if (genre is null)
-            { return NotFound(); }
-            _genre.Delete(genre.Id);
-            return Ok();
+
+            try
+            {
+                var genre = _genre.GetById(Id.Value);
+                if (genre is null)
+                { return NotFound(); }
+                _genre.Delete(genre.Id);
+                return Ok();
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
     }
 }

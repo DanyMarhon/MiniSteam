@@ -1,11 +1,16 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using MiniSteam.Application;
 using MiniSteam.Application.Dtos.Publisher;
+using MiniSteam.CustomExceptions;
 using MiniSteam.Entities;
 
 namespace MiniSteam.WebApi.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class PublishersController : ControllerBase
@@ -24,62 +29,141 @@ namespace MiniSteam.WebApi.Controllers
         [Route("All")]
         public async Task<IActionResult> All()
         {
-            return Ok(_mapper.Map<IList<PublisherResponseDto>>(_publisher.GetAll()));
+            try
+            {
+                var list = _publisher.GetAll();
+                return Ok(_mapper.Map<IList<PublisherResponseDto>>(list));
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpGet]
         [Route("ById")]
         public async Task<IActionResult> ById(int? Id)
         {
-            if (!Id.HasValue)
+            try
             {
-                return BadRequest();
+                if (!Id.HasValue)
+                {
+                    return BadRequest();
+                }
+                Publisher publisher = _publisher.GetById(Id.Value);
+                if (publisher is null)
+                {
+                    return NotFound();
+                }
+                return Ok(_mapper.Map<PublisherResponseDto>(publisher));
             }
-            Publisher publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
+            catch (AutoMapperMappingException ex)
             {
-                return NotFound();
+                throw new MiniSteamException("Mapping", ex);
             }
-            return Ok(_mapper.Map<PublisherResponseDto>(publisher));
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(PublisherRequestDto publisherRequestDto)
         {
-            if (!ModelState.IsValid)
-            { return BadRequest(); }
-            var publisher = _mapper.Map<Publisher>(publisherRequestDto);
-            _publisher.Save(publisher);
-            return Ok(publisher.Id);
+            try
+            {
+                if (!ModelState.IsValid)
+                { return BadRequest(); }
+                var publisher = _mapper.Map<Publisher>(publisherRequestDto);
+                _publisher.Save(publisher);
+                return Ok(publisher.Id);
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? Id, PublisherRequestDto publisherRequestDto)
         {
-            if (!Id.HasValue)
-            { return BadRequest(); }
-            if (!ModelState.IsValid)
-            { return BadRequest(); }
-            Publisher publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
-            { return NotFound(); }
-            publisher = _mapper.Map<Publisher>(publisherRequestDto);
-            _publisher.Save(publisher);
-            return Ok();
+            try
+            {
+                if (!Id.HasValue)
+                { return BadRequest(); }
+                if (!ModelState.IsValid)
+                { return BadRequest(); }
+                Publisher publisher = _publisher.GetById(Id.Value);
+                if (publisher is null)
+                { return NotFound(); }
+                publisher = _mapper.Map<Publisher>(publisherRequestDto);
+                _publisher.Save(publisher);
+                return Ok();
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detele(int? Id)
         {
-            if (!Id.HasValue)
-            { return BadRequest(); }
-            if (!ModelState.IsValid)
-            { return BadRequest(); }
-            var publisher = _publisher.GetById(Id.Value);
-            if (publisher is null)
-            { return NotFound(); }
-            _publisher.Delete(publisher.Id);
-            return Ok();
+            try
+            {
+                if (!Id.HasValue)
+                { return BadRequest(); }
+                if (!ModelState.IsValid)
+                { return BadRequest(); }
+                var publisher = _publisher.GetById(Id.Value);
+                if (publisher is null)
+                { return NotFound(); }
+                _publisher.Delete(publisher.Id);
+                return Ok();
+            }
+            catch (AutoMapperMappingException ex)
+            {
+                throw new MiniSteamException("Mapping", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new MiniSteamException("Database", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new MiniSteamException("Service", ex);
+            }
         }
     }
 }

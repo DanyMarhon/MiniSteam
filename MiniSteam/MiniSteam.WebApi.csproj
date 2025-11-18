@@ -20,16 +20,21 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Context" Version="4.6.5" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="8.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
     <PackageReference Include="System.Security.Permissions" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Exceptions\MiniSteam.Exceptions.csproj" />
     <ProjectReference Include="..\MiniSteam.Aplication\MiniSteam.Application.csproj" />
     <ProjectReference Include="..\MiniSteam.DataAccess\MiniSteam.DataAccess.csproj" />
     <ProjectReference Include="..\MiniSteam.Entities\MiniSteam.Entities.csproj" />
+    <ProjectReference Include="..\MiniSteam.Enums\MiniSteam.Enums.csproj" />
     <ProjectReference Include="..\MiniSteam.Services\MiniSteam.Services.csproj" />
   </ItemGroup>
 

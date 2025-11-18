@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MiniSteam.Abstractions\MiniSteam.Abstractions.csproj" />
+    <ProjectReference Include="..\MiniSteam.Enums\MiniSteam.Enums.csproj" />
     <ProjectReference Include="..\MiniSteam.Repository\MiniSteam.Repository.csproj" />
   </ItemGroup>
 
