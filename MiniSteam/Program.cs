@@ -1,5 +1,4 @@
-﻿using Serilog;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -8,10 +7,12 @@ using MiniSteam.Abstractions;
 using MiniSteam.Application;
 using MiniSteam.DataAccess;
 using MiniSteam.Entities.MicrosoftIdentity;
-using MiniSteam.Exceptions;
+using MiniSteam.Middlewares;
 using MiniSteam.Repository;
 using MiniSteam.Services;
 using MiniSteam.Services.AuthServices;
+using MiniSteam.WebApi.Middlewares;
+using Serilog;
 using System.Text;
 
 try
@@ -114,7 +115,8 @@ try
 
     var app = builder.Build();
 
-    // 🧩 Middleware global de excepciones
+    // 🧩 Middlewares
+    app.UseMiddleware<RequestLoggingMiddleware>();
     app.UseMiddleware<ExceptionMiddleware>();
 
     // Aplicar migraciones automáticas (opcional)

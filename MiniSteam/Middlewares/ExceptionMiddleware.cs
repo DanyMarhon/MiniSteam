@@ -5,7 +5,7 @@ using Serilog.Context;
 using System.Net;
 using System.Text.Json;
 
-namespace MiniSteam.Exceptions
+namespace MiniSteam.Middlewares
 {
     public class ExceptionMiddleware
     {
