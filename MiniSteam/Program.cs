@@ -69,6 +69,9 @@ try
             o => o.MigrationsAssembly("MiniSteam.WebApi"));
         options.UseLazyLoadingProxies();
     });
+    builder.Services.AddHealthChecks()
+    .AddDbContextCheck<DbDataAccess>("Database");
+
 
     // --- JWT ---
     builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
@@ -132,6 +135,7 @@ try
     app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.MapHealthChecks("/health");
     app.MapControllers();
 
     Log.Information("✅ MiniSteam API started successfully.");

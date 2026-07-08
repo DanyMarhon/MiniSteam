@@ -1,0 +1,52 @@
+services:
+
+  ministeam-sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ministeam-sql
+
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Sa30711!"
+      MSSQL_PID: "Developer"
+
+    ports:
+      - "1433:1433"
+
+    volumes:
+      - ministeam_sql_data:/var/opt/mssql
+
+    restart: unless-stopped
+
+
+  ministeam-api:
+    container_name: ministeam-api
+
+    build:
+      context: ..
+      dockerfile: MiniSteam/Dockerfile
+
+    depends_on:
+      - ministeam-sql
+
+    ports:
+      - "5000:8080"
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: >
+        Server=ministeam-sql,1433;
+        Database=MiniSteam;
+        User Id=sa;
+        Password=Sa30711!;
+        TrustServerCertificate=True;
+        Connect Timeout=3;
+
+      JwtConfig__Secret: trcdfvbopesryvhkdgdhmmtfwgmwaetdvfhryvhkdgdhmmtgonbazopgmwaetdux
+
+    restart: unless-stopped
+
+
+volumes:
+  ministeam_sql_data:

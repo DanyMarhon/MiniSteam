@@ -1,4 +1,4 @@
-@MiniSteam_HostAddress = http://localhost:5012
+@MiniSteam_HostAddress = http://server.localhost:5012
 
 GET {{MiniSteam_HostAddress}}/weatherforecast/
 Accept: application/json
